@@ -3,14 +3,20 @@ public class Player {
 
 	public static int rows = 10;
 	public static int columns = 10;
-	private boolean playerField[][];
-	
+	private int playerField[][];
 	private String playerName;
 	
 	Player(String name)
 	{
 		playerName = name;
-		playerField =  new boolean[rows][columns];
+		playerField =  new int[rows][columns];
+		
+		for (int i = 0; i < playerField.length; i++) {
+			for (int j = 0; j < playerField[i].length; j++) {
+				playerField[i][j] = 0;
+			}
+		}
+		
 		
 	}
 
@@ -23,7 +29,16 @@ public class Player {
 	}
 
 	
-	public void getPlayerField()
+	public int[][] getPlayerField()
+	{
+		return playerField;
+	}
+	
+	public void setPlayerField(int[][] playerField) {
+		this.playerField = playerField;
+	}
+
+	public void printPlayerField()
 	{
 		for(int i = 0; i < rows; i++)
 		{
@@ -33,11 +48,8 @@ public class Player {
 			}
 			System.out.println();
 		}
+		System.out.println("=================================================");
 	}
-	
 
-	public static void main(String[] args) {
-		new Player("Janis").getPlayerField();
-		
-	}
+
 }

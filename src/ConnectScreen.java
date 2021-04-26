@@ -24,7 +24,7 @@ public class ConnectScreen {
         
         // Define JObjektus
         JLabel titleLabel = new JLabel("Connect to server:");
-        titleLabel.setFont(new Font("Verdana", Font.PLAIN, 18));
+        titleLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel nameLabel = new JLabel("Name:");
         JLabel hostLabel = new JLabel("Host:");
@@ -41,14 +41,17 @@ public class ConnectScreen {
 			//TODO: field validation
 			Player newPlayer = new Player(nameField.getText());
 			System.out.println(newPlayer.getPlayerName());
+			frame.dispose();
 		});
         
         // Layout definicijas
         gbc.insets = new Insets(5,5,5,5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        connectionPanel.add(titleLabel);
+        connectionPanel.add(titleLabel, gbc);
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 1;
         connectionPanel.add(nameLabel, gbc);
@@ -66,7 +69,7 @@ public class ConnectScreen {
         connectionPanel.add(portLabel, gbc);
         gbc.gridx = 1;
         gbc.gridy = 3;
-        connectionPanel.add(portField, gbc);      
+        connectionPanel.add(portField, gbc);
         gbc.gridx = 1;
         gbc.gridy = 4;
         connectionPanel.add(connectButton, gbc);
