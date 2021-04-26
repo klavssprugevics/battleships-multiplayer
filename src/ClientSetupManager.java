@@ -19,12 +19,15 @@ public class ClientSetupManager {
 	private JFrame frame;
 	private JPanel namePanel;
 	private JPanel shipSelectPanel;
+	private JPanel gamePanel;
 	private JButton continueButton;
 	private JLabel descriptionLabel;
 	private String playerInputName;
 	private int[][] playerShips;
 	private Player player;
-
+	private GameGrid yourGrid;
+	private GameGrid enemyGrid;
+	private GameManager gameManager;
 	
 	
 	public ClientSetupManager() {
@@ -49,7 +52,7 @@ public class ClientSetupManager {
 				System.out.println(playerInputName);
 				
 				namePanel.setVisible(false);
-				frame.setTitle("Ship setup!");
+				frame.setTitle("Ship setup");
 				frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				frame.add(shipSelectPanel, BorderLayout.CENTER);
 			}
@@ -93,7 +96,6 @@ public class ClientSetupManager {
         shipSelectPanel.setLayout(new GridBagLayout());
 	    GridBagConstraints gbc2 = new GridBagConstraints();
         
-	    
         JLabel titleLabel1 = new JLabel("Setup your ships - press 'MOUSE2' to rotate.");
         titleLabel1.setFont(new Font("Verdana", Font.PLAIN, 24));
         titleLabel1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -109,7 +111,48 @@ public class ClientSetupManager {
 		{
 			this.player = new Player(nameField.getText());
 			this.player.setPlayerField(plyGrid.returnField());
-			this.player.printPlayerField();
+//			this.player.printPlayerField();
+			this.playerShips = plyGrid.returnField();
+			
+			
+	        this.yourGrid = new GameGrid(playerShips);
+	        yourGrid.revealShips();
+	        this.enemyGrid = new GameGrid(playerShips);
+	        this.player.setPlayerShips(plyGrid.getShips());
+			this.gameManager = new GameManager(this, this.yourGrid, this.enemyGrid, player, new Player("Enemy"));
+
+			
+	        
+	        
+	        
+		    GridBagConstraints gbc3 = new GridBagConstraints();
+		    
+	        JLabel yourFieldLabel = new JLabel("Your field");
+	        yourFieldLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
+	        yourFieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		    
+	        JLabel enemyFieldLabel = new JLabel("Enemy field");
+	        enemyFieldLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
+	        enemyFieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	        
+	        gbc3.insets = new Insets(5,50,5,50);
+	        gbc3.gridx = 0;
+	        gbc3.gridy = 0;
+	        gamePanel.add(yourFieldLabel, gbc3);
+	        gbc3.gridx = 1;
+	        gbc3.gridy = 0;
+	        gamePanel.add(enemyFieldLabel, gbc3);	        
+	        gbc3.gridx = 0;
+	        gbc3.gridy = 1;
+	        gamePanel.add(yourGrid, gbc3);
+	        gbc3.gridx = 1;
+	        gbc3.gridy = 1;
+	        gamePanel.add(enemyGrid, gbc3);
+	        
+			shipSelectPanel.setVisible(false);
+			frame.setTitle("Battleships");
+			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			frame.add(gamePanel, BorderLayout.CENTER);
 		});
         
         gbc2.insets = new Insets(5,50,5,50);
@@ -126,6 +169,13 @@ public class ClientSetupManager {
         gbc2.gridy = 3;
         shipSelectPanel.add(continueButton, gbc2);
         
+        // Setup Game panel
+        
+
+        
+        gamePanel = new JPanel();
+        gamePanel.setLayout(new GridBagLayout());
+
         
         
         frame = new JFrame("Enter your name");
@@ -160,7 +210,11 @@ public class ClientSetupManager {
 
 	}
 	
-
+	public void declareWinner(Player winner)
+	{
+		JOptionPane.showMessageDialog(frame, winner.getPlayerName() + " has won.");
+		frame.dispose();
+	}
 	
 
 

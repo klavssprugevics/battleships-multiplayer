@@ -1,9 +1,12 @@
+import java.awt.Point;
+import java.util.Vector;
 
 public class Player {
 
 	public static int rows = 10;
 	public static int columns = 10;
 	private int playerField[][];
+	private Ship playerShips[];
 	private String playerName;
 	
 	Player(String name)
@@ -19,7 +22,18 @@ public class Player {
 		
 		
 	}
-
+	public Ship getShipByCoordinates(int row, int col)
+	{
+		Ship ship = null;
+		for (int i = 0; i < playerShips.length; i++) {
+			if(playerShips[i].getCoordinates().contains(new Point(col, row)))
+			{
+				ship = playerShips[i];
+			}
+		}
+		return ship;
+	}
+	
 	public String getPlayerName() {
 		return playerName;
 	}
@@ -28,6 +42,15 @@ public class Player {
 		this.playerName = playerName;
 	}
 
+	public Ship[] getPlayerShips()
+	{
+		return playerShips;
+	}
+	
+	public void setPlayerShips(Ship[] playerShips)
+	{
+		this.playerShips = playerShips;
+	}
 	
 	public int[][] getPlayerField()
 	{

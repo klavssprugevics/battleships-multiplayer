@@ -18,6 +18,7 @@ public class GameSetupGrid extends JPanel{
 	private int rotation; // 0 - vertical; 1 - horizontal
 	private int currentShipIndex; // Which ship (length) is currently being placed
     private int[] shipOrder = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 0};
+    private Ship[] ships;
     
     
 	public GameSetupGrid(ClientSetupManager ply)
@@ -32,6 +33,7 @@ public class GameSetupGrid extends JPanel{
         
         // Initialize cells 
         allCells = new SetupCell[10][10];
+        ships = new Ship[shipOrder.length - 1];
         
         for (int row = 0; row < allCells.length; row++) {
             for (int col = 0; col < allCells[row].length; col++) {
@@ -109,6 +111,7 @@ public class GameSetupGrid extends JPanel{
 		for (int i = 0; i < pointsToDraw.size(); i++) {
 			
 //				System.out.println("Ship placed!");
+				ships[currentShipIndex] = new Ship(col, row, rotation, shipOrder[currentShipIndex]);
 				allCells[pointsToDraw.get(i).y][pointsToDraw.get(i).x].setBackground(Color.GRAY);
 				allCells[pointsToDraw.get(i).y][pointsToDraw.get(i).x].setStatus(shipOrder[currentShipIndex]);
 		}
@@ -119,6 +122,7 @@ public class GameSetupGrid extends JPanel{
 		
 		if(shipOrder[currentShipIndex] == 0)
 		{
+			
 			ply.enableContinueButton();
 			ply.editDescription("Press continue...");
 		}
@@ -127,11 +131,16 @@ public class GameSetupGrid extends JPanel{
 			ply.editDescription("Place ship with size: " + shipOrder[currentShipIndex]);
 		}
 			
-
+		
 		
 		return true;
 	}
 	
+	
+	public Ship[] getShips() {
+		return ships;
+	}
+
 	// Function checks whether a ship can be drawn/placed at the current location
 	public boolean checkNeighbours(int row, int col)
 	{
@@ -222,6 +231,8 @@ public class GameSetupGrid extends JPanel{
 		return shipOrder;
 	}
 
+
+
 	public int[][] returnField() {
 		
 		int field[][] = new int[10][10];
@@ -246,7 +257,7 @@ class SetupCell extends JPanel{
 //	private int col;
 	private int status;
 		
-	SetupCell(GameSetupGrid grid, int row, int col)
+	public SetupCell(GameSetupGrid grid, int row, int col)
 	{
 //		this.row = row;
 //		this.col = col;
@@ -272,7 +283,7 @@ class SetupCell extends JPanel{
 	          }
 	          
 	          @Override
-	          public void mouseClicked(MouseEvent e)
+	          public void mousePressed(MouseEvent e)
 	          {
                 if (e.getButton() == MouseEvent.BUTTON1){
                 	grid.addShip(row, col);
@@ -283,6 +294,8 @@ class SetupCell extends JPanel{
                     	grid.setRotation(0);
                     else
                     	grid.setRotation(1);
+                    grid.refreshGrid();
+                    grid.drawShipPreview(row, col);
                     
                 }
 	          }
