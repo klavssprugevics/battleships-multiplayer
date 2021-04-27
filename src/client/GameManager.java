@@ -5,7 +5,7 @@ import java.util.Vector;
 
 public class GameManager {
 	
-	private ClientUI cl;
+	private Client cl;
 	private Player player1;
 	private Player player2;
 	private GameGrid player1Grid;
@@ -20,7 +20,7 @@ public class GameManager {
 	private boolean gameOngoing;
 
 	
-	public GameManager(ClientUI cl, GameGrid player1Grid, GameGrid player2Grid, Player player1, Player player2)
+	public GameManager(Client cl, GameGrid player1Grid, GameGrid player2Grid, Player player1, Player player2)
 	{
 		this.cl = cl;
 		this.player1 = player1;

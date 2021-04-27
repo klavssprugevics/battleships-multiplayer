@@ -17,13 +17,17 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 
-public class ClientUI {
+public class Client {
 
-	private JFrame frame;
-	
+	private JFrame frame;	
 	private JPanel connectionPanel;
 	private JPanel shipSelectPanel;
 	private JPanel gamePanel;
+	
+	
+	private JFrame waitFrame;
+	private JPanel waitPanel;
+
 	
 	
 	private JButton continueButton;
@@ -31,9 +35,9 @@ public class ClientUI {
 
 	private int[][] playerShips;
 	private Player player;
-	private GameGrid yourGrid;
+//	private GameGrid yourGrid;
 	private GameGrid enemyGrid;
-	private GameManager gameManager;
+//	private GameManager gameManager;
 	
 	private String host;
 	private String port;
@@ -41,7 +45,7 @@ public class ClientUI {
 	private Socket socket;
 	private ServerConnection serverCon;
 		
-	public ClientUI() {
+	public Client() {
 		
 		// Connection panel
 		connectionPanel = new JPanel();
@@ -86,14 +90,16 @@ public class ClientUI {
 				try
 				{
 					socket = new Socket(host, Integer.parseInt(port));
-					serverCon = new ServerConnection(socket, player);
+					serverCon = new ServerConnection(socket, player, this);
 					serverCon.start();
+					
 				}
 				catch(IOException ex)
 				{
 					System.out.println("Error connection to server " + ex.getMessage());
 					JOptionPane.showMessageDialog(frame, "Error connecting to server");
 					frame.dispose();
+					System.exit(1);
 					
 				}
 				finally
@@ -101,7 +107,6 @@ public class ClientUI {
 					frame.setTitle("Ship setup");
 					frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					frame.add(shipSelectPanel, BorderLayout.CENTER);
-					serverCon.sendPlayerName();
 				}
 
 				
@@ -143,6 +148,25 @@ public class ClientUI {
         
       
      
+		waitFrame = new JFrame("Waiting for other player...");		
+		waitPanel = new JPanel();
+		
+
+
+        JLabel waitLabel = new JLabel("Waiting for other player...");
+        waitLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
+        waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        waitPanel.add(waitLabel);
+        
+		waitFrame.setLocationRelativeTo(null);
+		waitFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		waitFrame.setLayout(new BorderLayout());
+		waitFrame.setMinimumSize(new Dimension(500, 100));
+		waitFrame.add(waitPanel, BorderLayout.CENTER);
+		waitFrame.pack();
+		
+		
+		
         // Setup Ship panel
 
 	    
@@ -156,7 +180,7 @@ public class ClientUI {
         
         
 
-	    GameSetupGrid plyGrid = new GameSetupGrid(this);
+	    GameSetupGrid setupGrid = new GameSetupGrid(this);
 	    
         shipSelectPanel = new JPanel();
         shipSelectPanel.setLayout(new GridBagLayout());
@@ -175,17 +199,31 @@ public class ClientUI {
         continueButton.setVisible(false);
         continueButton.addActionListener(e ->
 		{
-			this.player = new Player(nameField.getText());
-			this.player.setPlayerField(plyGrid.returnField());
+			// Continue buttton pressed
+			
+			player.setPlayerField(setupGrid.returnField());
+			player.setPlayerShips(setupGrid.getShips());
+			
+			
+//			serverCon.sendPlayerName();
+			serverCon.sendPlayerObject();
+			serverCon.setReady(true);
+//			serverCon.checkPlayersReady();
+			
+			
+			
+			
+//			this.player = new Player(nameField.getText());
+//			this.player.setPlayerField(setupGrid.returnField());
 //			this.player.printPlayerField();
-			this.playerShips = plyGrid.returnField();
+//			this.playerShips = setupGrid.returnField();
 			
 			
-	        this.yourGrid = new GameGrid(playerShips);
-	        yourGrid.revealShips();
+//	        this.yourGrid = new GameGrid(playerShips);
+			PlayerGrid playerGrid = new PlayerGrid(player.getPlayerField());
 	        this.enemyGrid = new GameGrid(playerShips);
-	        this.player.setPlayerShips(plyGrid.getShips());
-			this.gameManager = new GameManager(this, this.yourGrid, this.enemyGrid, player, new Player("Enemy"));
+	        this.player.setPlayerShips(setupGrid.getShips());
+//			this.gameManager = new GameManager(this, this.yourGrid, this.enemyGrid, player, new Player("Enemy"));
 
 			
 	        
@@ -210,13 +248,13 @@ public class ClientUI {
 	        gamePanel.add(enemyFieldLabel, gbc3);	        
 	        gbc3.gridx = 0;
 	        gbc3.gridy = 1;
-	        gamePanel.add(yourGrid, gbc3);
+	        gamePanel.add(playerGrid, gbc3);
 	        gbc3.gridx = 1;
 	        gbc3.gridy = 1;
 	        gamePanel.add(enemyGrid, gbc3);
 	        
 			shipSelectPanel.setVisible(false);
-			frame.setTitle("Battleships");
+			frame.setTitle("Battleships - Playing on: " + host);
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 			frame.add(gamePanel, BorderLayout.CENTER);
 		});
@@ -230,15 +268,13 @@ public class ClientUI {
         shipSelectPanel.add(descriptionLabel, gbc2);
         gbc2.gridx = 0;
         gbc2.gridy = 2;
-	    shipSelectPanel.add(plyGrid, gbc2);
+	    shipSelectPanel.add(setupGrid, gbc2);
         gbc2.gridx = 0;
         gbc2.gridy = 3;
         shipSelectPanel.add(continueButton, gbc2);
         
+        
         // Setup Game panel
-        
-
-        
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridBagLayout());
 
@@ -272,10 +308,24 @@ public class ClientUI {
 	}
 
 	public static void main(String[] args) {
-		new ClientUI();
+		new Client();
 
 	}
 	
+	public void openWaitingScreen()
+	{
+		System.out.println("Other player not connected: opening waiting screen.");
+		frame.setVisible(false);
+		waitFrame.setVisible(true);
+	}
+	public void closeWaitingScreen()
+	{
+		frame.setVisible(true);
+		if(waitFrame.equals(null))
+			return;
+		waitFrame.setVisible(false);
+
+	}
 	public void declareWinner(Player winner)
 	{
 		try

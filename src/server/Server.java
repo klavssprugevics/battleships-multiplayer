@@ -11,19 +11,15 @@ public class Server {
 	private static ArrayList<ClientHandler> clients = new ArrayList<>();
 	private static ArrayList<Player> players = new ArrayList<>();
 	
-	public static void addPlayer(Player player)
-	{
-		players.add(player);
-	}
-	
-	public static void getPlayerNames()
-	{
-		System.out.println("Players connected: ");
-		for (Player player : players) {
-			System.out.println(player.getPlayerName());
-		}
-	}
-	
+//
+//	public static void getPlayerNames()
+//	{
+//		System.out.println("Players connected: ");
+//		for (String player : players) {
+//			System.out.println(player);
+//		}
+//	}
+//	
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -45,9 +41,10 @@ public class Server {
 				System.out.println("New client connected");
 				
 				// Izveido un saak clientHandler thread
-				ClientHandler clientThread = new ClientHandler(client, clients);
+				ClientHandler clientThread = new ClientHandler(client, clients, players);
 				clients.add(clientThread);
 				clientThread.start();
+
 			}
 		}
 		finally

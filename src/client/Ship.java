@@ -2,7 +2,7 @@ package client;
 import java.awt.Point;
 import java.util.Vector;
 
-public class Ship {
+public class Ship implements java.io.Serializable{
 
 	private int xPos;
 	private int yPos;

@@ -106,9 +106,8 @@ public class GameGrid extends JPanel{
 	}
 	
 }
-
-@SuppressWarnings("serial")
 class GameCell extends JPanel{
+	
 	private int status;
 	private boolean locked = false;
 		
@@ -116,7 +115,6 @@ class GameCell extends JPanel{
 	{
 		this.status = 0;
 		
-    	// TODO: Function for reset colour to normal
 		setBackground(Color.white);            
     	setBorder(new MatteBorder(1, 1, 1, 1, new Color(79, 183, 227)));
         setPreferredSize(new Dimension(50, 50));
@@ -172,6 +170,4 @@ class GameCell extends JPanel{
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
-
 }

@@ -1,7 +1,7 @@
 package client;
 import java.awt.Point;
 
-public class Player {
+public class Player implements java.io.Serializable{
 
 	public static int rows = 10;
 	public static int columns = 10;
@@ -9,7 +9,7 @@ public class Player {
 	private Ship playerShips[];
 	private String playerName;
 	
-	Player(String name)
+	public Player(String name)
 	{
 		playerName = name;
 		playerField =  new int[rows][columns];

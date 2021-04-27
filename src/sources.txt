@@ -1,4 +1,4 @@
-C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\ClientUI.java
+C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\Client.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameGrid.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameManager.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameSetupGrid.java

@@ -14,7 +14,7 @@ import javax.swing.border.MatteBorder;
 @SuppressWarnings("serial")
 public class GameSetupGrid extends JPanel{
 	
-	private ClientUI ply;
+	private Client ply;
 	private SetupCell[][] allCells;
 	private int rotation; // 0 - vertical; 1 - horizontal
 	private int currentShipIndex; // Which ship (length) is currently being placed
@@ -22,7 +22,7 @@ public class GameSetupGrid extends JPanel{
     private Ship[] ships;
     
     
-	public GameSetupGrid(ClientUI ply)
+	public GameSetupGrid(Client ply)
 	{
 		this.ply = ply;
 		this.rotation = 1;
