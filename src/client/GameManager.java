@@ -1,10 +1,11 @@
+package client;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.Vector;
 
 public class GameManager {
 	
-	private ClientSetupManager cl;
+	private ClientUI cl;
 	private Player player1;
 	private Player player2;
 	private GameGrid player1Grid;
@@ -19,7 +20,7 @@ public class GameManager {
 	private boolean gameOngoing;
 
 	
-	public GameManager(ClientSetupManager cl, GameGrid player1Grid, GameGrid player2Grid, Player player1, Player player2)
+	public GameManager(ClientUI cl, GameGrid player1Grid, GameGrid player2Grid, Player player1, Player player2)
 	{
 		this.cl = cl;
 		this.player1 = player1;
@@ -59,8 +60,6 @@ public class GameManager {
 	
 	public void shoot(int row, int col)
 	{
-		// Player can shoot until he misses
-		boolean hit = true;
 		
 		// function to check if valid shot
 		if(currentTurn.equals(player1))
@@ -68,7 +67,6 @@ public class GameManager {
 			if(player2Ships[row][col] == 0)
 			{
 				player2Grid.setColor(row, col, new Color(158, 216, 240), true);
-				hit = false;
 				System.out.println("Miss!");
 			}
 			else
@@ -108,9 +106,7 @@ public class GameManager {
 		int startIndexCol;
 		int endIndexRow;
 		int endIndexCol;
-		
-		Vector<Point> bbox = new Vector<Point>();
-		
+				
 		// Calcualtes bounding box coordinates
 		if(rotation == 1)
 		{

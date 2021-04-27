@@ -1,3 +1,4 @@
+package client;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -13,7 +14,7 @@ import javax.swing.border.MatteBorder;
 @SuppressWarnings("serial")
 public class GameSetupGrid extends JPanel{
 	
-	private ClientSetupManager ply;
+	private ClientUI ply;
 	private SetupCell[][] allCells;
 	private int rotation; // 0 - vertical; 1 - horizontal
 	private int currentShipIndex; // Which ship (length) is currently being placed
@@ -21,7 +22,7 @@ public class GameSetupGrid extends JPanel{
     private Ship[] ships;
     
     
-	public GameSetupGrid(ClientSetupManager ply)
+	public GameSetupGrid(ClientUI ply)
 	{
 		this.ply = ply;
 		this.rotation = 1;

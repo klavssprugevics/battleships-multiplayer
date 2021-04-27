@@ -121,5 +121,5 @@ $RECYCLE.BIN/
 
 .project
 .classpath
-
+.src/sources.txt
 # End of https://www.toptal.com/developers/gitignore/api/windows,java,eclipse
