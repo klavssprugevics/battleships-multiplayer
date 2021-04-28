@@ -1,10 +1,7 @@
 package client;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 import server.Message;
@@ -46,7 +43,6 @@ public class ServerConnection extends Thread{
 		this.shot = shot;
 		try
 		{
-//			System.out.println("Sending shot (" + shot.getX() + ", " + shot.getY() + ")");
 			out.writeObject(this.shot);
 		}
 		catch(IOException e)
@@ -128,17 +124,10 @@ public class ServerConnection extends Thread{
 					
 					System.out.println("Trying to get message");
 					message = (Message) recievedObject;
-					System.out.println("Recieved message");
-					System.out.println("Hit: " + message.isHit());
-					System.out.println("Sink: " + message.isSink());
-					System.out.println("Victory: " + message.isVictory());
-					System.out.println("Next turn: " + message.getNextTurn());
+
 					
-					if(message.getNextTurn().equals(player.getPlayerName()))
-					{
-						client.setMyTurn(true);
-					}
-					client.setTurnLabel(message.getNextTurn());
+					// Process message
+					client.processMessage(message);
 				}
 
 			}

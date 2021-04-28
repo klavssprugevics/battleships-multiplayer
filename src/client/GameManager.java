@@ -169,7 +169,7 @@ public class GameManager {
 		}
 		
 		
-		cl.declareWinner(player1);
+//		cl.declareWinner(player1);
 		return true;
 	}
 		

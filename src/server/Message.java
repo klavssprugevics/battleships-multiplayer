@@ -3,6 +3,9 @@ package server;
 import java.awt.Point;
 import java.util.Vector;
 
+import client.Shot;
+import client.Ship;
+
 @SuppressWarnings("serial")
 public class Message implements java.io.Serializable{
 
@@ -10,36 +13,58 @@ public class Message implements java.io.Serializable{
 	private boolean sink;
 	private boolean victory;
 	private String nextTurn;
-	private Vector<Point> shipCoords;
+	private Shot shot;
+	private Ship Ship;
 	
-	public Message(boolean hit, boolean sink, boolean victory, String nextTurn) {
-		this.hit = hit;
-		this.sink = sink;
-		this.victory = victory;
-		this.nextTurn = nextTurn;
-	}
-
-	public Vector<Point> getShipCoords() {
-		return shipCoords;
-	}
-
-	public void setShipCoords(Vector<Point> shipCoords) {
-		this.shipCoords = shipCoords;
+	public Message() {
 	}
 
 	public boolean isHit() {
 		return hit;
 	}
 
+	public void setHit(boolean hit) {
+		this.hit = hit;
+	}
+
 	public boolean isSink() {
 		return sink;
+	}
+
+	public void setSink(boolean sink) {
+		this.sink = sink;
 	}
 
 	public boolean isVictory() {
 		return victory;
 	}
 
+	public void setVictory(boolean victory) {
+		this.victory = victory;
+	}
+
 	public String getNextTurn() {
 		return nextTurn;
 	}
+
+	public void setNextTurn(String nextTurn) {
+		this.nextTurn = nextTurn;
+	}
+
+	public Shot getShot() {
+		return shot;
+	}
+
+	public void setShot(Shot shot) {
+		this.shot = shot;
+	}
+
+	public Ship getShip() {
+		return Ship;
+	}
+
+	public void setShip(Ship ship) {
+		Ship = ship;
+	}
+
 }

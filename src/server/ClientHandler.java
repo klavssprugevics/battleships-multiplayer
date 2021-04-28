@@ -78,7 +78,11 @@ public class ClientHandler extends Thread {
 			
 			// Player, kas aizpildija pirmais savu laukumu saks pirmais speli
 			Server.currentTurn = Server.players.get(0);
-			broadcast(new Message(false, false, false, Server.currentTurn.getPlayerName()));			
+			Message msg = new Message();
+			msg.setNextTurn(Server.players.get(0).getPlayerName());
+			msg.setShot(null);
+			msg.setShip(null);
+			broadcast(msg);			
 		}	
 	}
 	
@@ -130,12 +134,8 @@ public class ClientHandler extends Thread {
 					System.out.println("Y: " + shot.getY());
 					
 					// Logic
-					// Ja netrapa - samaina player turns
-					for (Player player : Server.players)
-						if(!player.equals(Server.currentTurn))
-							Server.currentTurn = player;
-
-					broadcast(new Message(false, false, false, Server.currentTurn.getPlayerName()));
+					
+					broadcast(Server.processShot(shot));
 
 				}				
 			}

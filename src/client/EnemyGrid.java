@@ -3,21 +3,21 @@ package client;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class EnemyGrid extends JPanel{
 	
-	private Client client;
 	private ServerConnection connection;
 	
 	private EnemyCell[][] allCells;
 	private boolean shooting = false;
     
-    EnemyGrid(Client client, ServerConnection server)
+    EnemyGrid(ServerConnection server)
 	{
-    	this.client = client;
     	this.connection = server;
 		setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -72,4 +72,46 @@ public class EnemyGrid extends JPanel{
 		connection.sendShot(new Shot(col, row));
 	}
 	
+	public void drawBoundingBox(Ship ship)
+	{
+		Vector<Point> shipCoords = ship.getCoordinates();
+		int col = ship.getxPos();
+		int row = ship.getyPos();
+		int rotation = ship.getRotation();
+		int size = ship.getSize();
+	
+		int startIndexRow;
+		int startIndexCol;
+		int endIndexRow;
+		int endIndexCol;
+				
+		// Calcualtes bounding box coordinates
+		if(rotation == 1)
+		{
+			startIndexRow = (row - 1 < 0) ? 0 : row - 1;
+			startIndexCol = (col - 1 < 0) ? 0 : col - 1;
+			endIndexRow = (row + 1 > 9) ? 9 : row + 1;
+			endIndexCol = (col + size > 9) ? 9 : col + size;
+		}
+		else
+		{
+			startIndexRow = (row - 1 < 0) ? 0 : row - 1;
+			startIndexCol = (col - 1 < 0) ? 0 : col - 1;
+			endIndexRow = (row + size > 9) ? 9 : row + size;
+			endIndexCol = (col + 1 > 9) ? 9 : col + 1;
+		}
+		
+		for (int i = startIndexRow; i <= endIndexRow; i++) {
+			for (int j = startIndexCol; j <= endIndexCol; j++) {
+				if(shipCoords.contains(new Point(j, i)))
+				{
+					continue;
+				}
+				else
+				{
+					setColor(i, j, new Color(158, 216, 240), true);
+				}
+			}			
+		}
+	}
 }

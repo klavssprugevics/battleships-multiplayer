@@ -1,6 +1,8 @@
 package client;
 import java.awt.Point;
+import java.util.Vector;
 
+@SuppressWarnings("serial")
 public class Player implements java.io.Serializable{
 
 	public static int rows = 10;
@@ -19,9 +21,8 @@ public class Player implements java.io.Serializable{
 				playerField[i][j] = 0;
 			}
 		}
-		
-		
 	}
+	
 	public Ship getShipByCoordinates(int row, int col)
 	{
 		Ship ship = null;
@@ -60,7 +61,39 @@ public class Player implements java.io.Serializable{
 	public void setPlayerField(int[][] playerField) {
 		this.playerField = playerField;
 	}
+	
+	public void changeStatus(int row, int col, int newStatus)
+	{
+		this.playerField[row][col] = newStatus;
+	}
+	
+	public boolean sunken(int row, int col)
+	{
+		Ship ship = getShipByCoordinates(row, col);
+		Vector<Point> shipCoords = ship.getCoordinates();
+		
+		boolean sink = true;
 
+		for (Point point : shipCoords) {
+			if(playerField[point.y][point.x] != -1)
+				sink = false;
+		}
+		
+		
+		return sink;
+	}
+	
+	public boolean checkAllSunken()
+	{
+		for (int i = 0; i < playerField.length; i++) {
+			for (int j = 0; j < playerField.length; j++) {
+				if(playerField[i][j] != 0 && playerField[i][j] != -1)
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	public void printPlayerField()
 	{
 		for(int i = 0; i < rows; i++)
@@ -73,6 +106,4 @@ public class Player implements java.io.Serializable{
 		}
 		System.out.println("=================================================");
 	}
-
-
 }

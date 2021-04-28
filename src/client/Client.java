@@ -1,5 +1,6 @@
 package client;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -15,6 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import server.Message;
 
 
 public class Client {
@@ -37,6 +40,8 @@ public class Client {
 
 	private int[][] playerShips;
 	private Player player;
+	private String lastTurn;
+	
 	private boolean myTurn = false;
 //	private GameGrid yourGrid;
 	private PlayerGrid playerGrid;
@@ -208,11 +213,13 @@ public class Client {
 			player.setPlayerField(setupGrid.returnField());
 			player.setPlayerShips(setupGrid.getShips());
 			
+			playerGrid = new PlayerGrid(player.getPlayerField());
+			enemyGrid = new EnemyGrid(serverCon);
+			
 			serverCon.sendPlayerObject();
 			serverCon.setReady(true);
 			
-			playerGrid = new PlayerGrid(player.getPlayerField());
-			enemyGrid = new EnemyGrid(this, serverCon);
+
 			
 
 
@@ -302,15 +309,15 @@ public class Client {
 			enemyGrid.setShooting(true);
 	}
 	
-	public void setTurnLabel(String playerName)
-	{
-		currentTurnLabel.setText("Current turn: " + playerName);
-	}
+//	public void setTurnLabel(String playerName)
+//	{
+//		currentTurnLabel.setText("Current turn: " + playerName);
+//	}
 
-	public int[][] getPlayerShips()
-	{
-		return playerShips;
-	}
+//	public int[][] getPlayerShips()
+//	{
+//		return playerShips;
+//	}
 	
 	public void editDescription(String newLabel)
 	{
@@ -325,6 +332,78 @@ public class Client {
 	public static void main(String[] args) {
 		new Client();
 
+	}
+	
+	public void processMessage(Message message) {
+		
+		Shot shot = message.getShot();
+		currentTurnLabel.setText("Current turn: " + message.getNextTurn());
+		
+		System.out.println("----Message----");
+		System.out.println("Hit: " + message.isHit());
+		System.out.println("Sink: " + message.isSink());
+		System.out.println("Victory: " + message.isVictory());
+		System.out.println("Next turn: " + message.getNextTurn());
+		System.out.println("Shot: " + message.getShot());
+		System.out.println("Ship: " + message.getShip());
+		System.out.println("-------------------------");
+		
+		
+		
+		
+		// 1. gajiena neviens nav izsavis - to vajag skippot
+		if(message.getShot() == null)
+		{
+			if(player.getPlayerName().equals(message.getNextTurn()))
+				enemyGrid.setShooting(true);
+			
+			lastTurn = message.getNextTurn();
+			currentTurnLabel.setText("Current turn: " + message.getNextTurn());
+			return;
+		}
+
+		// Apstrada katru iepriekseja gajiena rezultatu
+		if(lastTurn.equals(player.getPlayerName()))
+		{
+			// 1. Ja ieprieksejais bija player gajiens - jazzime uz pretinieka karti
+			
+			if(message.isHit())
+			{
+				enemyGrid.setColor(shot.getY(), shot.getX(), Color.red, true);
+				if(message.isSink())
+				{
+					enemyGrid.drawBoundingBox(message.getShip());
+						
+				}
+			}
+			else
+			{
+				enemyGrid.setColor(shot.getY(), shot.getX(), new Color(158, 216, 240), true);
+				enemyGrid.setShooting(false);
+			}
+			
+		}
+		else
+		{
+			// 2. Ja ieprieksejais bija enemy gajiens - jazzime uz player karti
+			
+			if(message.isHit())
+			{
+				playerGrid.setColor(shot.getY(), shot.getX(), Color.red);
+			}				
+			else
+			{
+				playerGrid.setColor(shot.getY(), shot.getX(), new Color(158, 216, 240));
+				enemyGrid.setShooting(true);
+			}				
+		}
+		
+		if(message.isVictory())
+			declareWinner(lastTurn);
+			
+			
+		lastTurn = message.getNextTurn();
+		currentTurnLabel.setText("Current turn: " + message.getNextTurn());
 	}
 	
 	
@@ -342,7 +421,7 @@ public class Client {
 		waitFrame.setVisible(false);
 
 	}
-	public void declareWinner(Player winner)
+	public void declareWinner(String winner)
 	{
 		try
 		{
@@ -354,11 +433,13 @@ public class Client {
 		}
 		finally
 		{
-			JOptionPane.showMessageDialog(frame, winner.getPlayerName() + " has won.");
+			JOptionPane.showMessageDialog(frame,"Player: " + winner + " has won.");
 			frame.dispose();
 		}
 		
 	}
+
+
 	
 
 

@@ -1,5 +1,6 @@
 package client;
 
+@SuppressWarnings("serial")
 public class Shot implements java.io.Serializable{
 
 	private int x;

@@ -2,6 +2,7 @@ package client;
 import java.awt.Point;
 import java.util.Vector;
 
+@SuppressWarnings("serial")
 public class Ship implements java.io.Serializable{
 
 	private int xPos;
@@ -37,10 +38,7 @@ public class Ship implements java.io.Serializable{
 				coordinates.add(new Point(xPos + i, yPos));
 			}
 		}
-		
 	}
-
-
 	
 	public Vector<Point> getCoordinates() {
 		return coordinates;

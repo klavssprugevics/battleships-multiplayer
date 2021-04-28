@@ -55,4 +55,9 @@ public class PlayerGrid extends JPanel{
         }
 	}
 	
+	public void setColor(int row, int col, Color color)
+	{
+		allCells[row][col].setBackground(color);
+	}
+	
 }
