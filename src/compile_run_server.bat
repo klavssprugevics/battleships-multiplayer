@@ -1,0 +1,1 @@
+javac @sources.txt && java server.Server 9898

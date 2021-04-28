@@ -1,118 +1,146 @@
 package server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import client.Player;
+import client.Shot;
 
 
 public class ClientHandler extends Thread {
 
 	private Socket client;
-	private BufferedReader in;
-	private PrintWriter out;
-	private ObjectInputStream ois;
-	private ArrayList<ClientHandler> clients; 	// clients connected
-	private ArrayList<Player> players; 			// players that have setup their ships
-	private boolean playersConnected = false;
-	private Player currentPlayer;
 	
-	public ClientHandler(Socket clientSocket, ArrayList<ClientHandler> clients, ArrayList<Player> players) throws IOException
-	{
-		this.client = clientSocket;
-		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		this.out = new PrintWriter(client.getOutputStream(), true);
-		this.ois = new ObjectInputStream(client.getInputStream());
-		this.clients = clients;
-		this.players = players;
-		out.println("Succesfully created cliend handler thread");
-		
-	}
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
+
 	
-	public void broadcast(String message)
+	public ClientHandler(Socket clientSocket)
 	{
-		for (ClientHandler clientHandler : clients) {
-			clientHandler.getWriter().println(message);
+		try
+		{
+			this.client = clientSocket;
+			this.out = new ObjectOutputStream(client.getOutputStream());
+			this.in = new ObjectInputStream(client.getInputStream());
+			out.writeObject("Succesfully created client thread.");
+			
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error creating client thread: " + e.getMessage());
 		}
 	}
 	
-	public PrintWriter getWriter()
+	public void broadcast(Object message)
+	{
+		for (ClientHandler clientHandler : Server.clients) {
+			try
+			{
+				clientHandler.getObjectWriter().writeObject(message);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public ObjectOutputStream getObjectWriter() throws IOException
 	{
 		return out;
 	}
 	
 	public void checkClientCount()
 	{
-		if(clients.size() < 2)
+		if(Server.clients.size() < 2)
 		{
 			broadcast("wait");
 		}
 		else
 		{
-			playersConnected = true;
+			Server.playersConnected = true;
 			broadcast("playersConnected");
 		}
 	}
 	
 	public void checkPlayerCount()
 	{
-		if(players.size() < 2)
+		if(Server.players.size() < 2)
 		{
 			broadcast("wait");
 		}
 		else
 		{
 			broadcast("playersReady");
+			Server.gameStarted = true;
+			
+			// Player, kas aizpildija pirmais savu laukumu saks pirmais speli
+			Server.currentTurn = Server.players.get(0);
+			broadcast(new Message(false, false, false, Server.currentTurn.getPlayerName()));			
 		}	
 	}
 	
 	public void run()
 	{	
-		if(!playersConnected)
+		if(!Server.playersConnected)
 			checkClientCount();
 		try
 		{
 			// Gaidam komandas no client
 			while(true)
 			{
-				String request = in.readLine();
-//				System.out.println(request);
-//				out.println(request);
-				
-				// Kamer nav 2 player - mes apstradajam sadu request
-				if(players.size() < 2)
-				{
-					if(request.contains("nextPlayer"))
-					{
-						// Parsuta player objektus serverim
-						try {
-							currentPlayer = (Player) ois.readObject();
-							players.add(currentPlayer);
-							System.out.println("New player: " + currentPlayer.getPlayerName());
-							checkPlayerCount();
-						} catch (ClassNotFoundException e) {
-							System.out.println("Error reading player object on serverside");
-							e.printStackTrace();
-						}
+				Object recievedObject = in.readObject();
 
+				// Nosuta/sanem komandas (strings), kas atbild par speles sakumu
+				if(!Server.gameStarted)
+				{
+					
+					String request = (String) recievedObject;
+					// Kamer nav 2 player - mes apstradajam sadu request
+					if(Server.players.size() < 2)
+					{
+						if(request.contains("nextPlayer"))
+						{
+							// Parsuta player objektus serverim
+							try
+							{
+								Player currentPlayer = (Player) in.readObject();
+								Server.players.add(currentPlayer);
+								System.out.println("New player: " + currentPlayer.getPlayerName());
+								checkPlayerCount();
+							}
+							catch (ClassNotFoundException e)
+							{
+								System.out.println("Error reading player object on serverside");
+								e.printStackTrace();
+							}
+						}
 					}
 				}
+				else
+				{
+					System.out.println("Recieving shots");
 					
-//				if(request.equals("playersReady?"))
-//				{
-//					checkPlayerCount();
-//				}
-				
+					// Nosuta/sanem shots un messages
+					// Nolasa shot
+					Shot shot = (Shot) recievedObject;
+					System.out.println("X: " + shot.getX());
+					System.out.println("Y: " + shot.getY());
+					
+					// Logic
+					// Ja netrapa - samaina player turns
+					for (Player player : Server.players)
+						if(!player.equals(Server.currentTurn))
+							Server.currentTurn = player;
 
-				
+					broadcast(new Message(false, false, false, Server.currentTurn.getPlayerName()));
+
+				}				
 			}
 		}
-		catch(IOException e)
+		catch(IOException | ClassNotFoundException e)
 		{
 			System.out.println("Error parsing request " + e.getMessage());
 		}
@@ -121,7 +149,6 @@ public class ClientHandler extends Thread {
 			// Kad serveris tiek izslegts - aizveram 
 			try
 			{
-				
 				in.close();
 				out.close();
 				client.close();

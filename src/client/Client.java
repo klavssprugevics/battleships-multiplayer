@@ -32,11 +32,15 @@ public class Client {
 	
 	private JButton continueButton;
 	private JLabel descriptionLabel;
+	
+	private JLabel currentTurnLabel;
 
 	private int[][] playerShips;
 	private Player player;
+	private boolean myTurn = false;
 //	private GameGrid yourGrid;
-	private GameGrid enemyGrid;
+	private PlayerGrid playerGrid;
+	private EnemyGrid enemyGrid;
 //	private GameManager gameManager;
 	
 	private String host;
@@ -104,7 +108,7 @@ public class Client {
 				}
 				finally
 				{
-					frame.setTitle("Ship setup");
+					frame.setTitle("[" + player.getPlayerName() + "] Ship setup");
 					frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					frame.add(shipSelectPanel, BorderLayout.CENTER);
 				}
@@ -204,32 +208,22 @@ public class Client {
 			player.setPlayerField(setupGrid.returnField());
 			player.setPlayerShips(setupGrid.getShips());
 			
-			
-//			serverCon.sendPlayerName();
 			serverCon.sendPlayerObject();
 			serverCon.setReady(true);
-//			serverCon.checkPlayersReady();
 			
+			playerGrid = new PlayerGrid(player.getPlayerField());
+			enemyGrid = new EnemyGrid(this, serverCon);
 			
-			
-			
-//			this.player = new Player(nameField.getText());
-//			this.player.setPlayerField(setupGrid.returnField());
-//			this.player.printPlayerField();
-//			this.playerShips = setupGrid.returnField();
-			
-			
-//	        this.yourGrid = new GameGrid(playerShips);
-			PlayerGrid playerGrid = new PlayerGrid(player.getPlayerField());
-	        this.enemyGrid = new GameGrid(playerShips);
-	        this.player.setPlayerShips(setupGrid.getShips());
-//			this.gameManager = new GameManager(this, this.yourGrid, this.enemyGrid, player, new Player("Enemy"));
 
-			
-	        
+
+ 
 	        
 	        
 		    GridBagConstraints gbc3 = new GridBagConstraints();
+		    
+	        currentTurnLabel = new JLabel("Current Turn: ");
+	        currentTurnLabel.setFont(new Font("Verdana", Font.PLAIN, 30));
+	        currentTurnLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		    
 	        JLabel yourFieldLabel = new JLabel("Your field");
 	        yourFieldLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
@@ -240,21 +234,27 @@ public class Client {
 	        enemyFieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	        
 	        gbc3.insets = new Insets(5,50,5,50);
+	        gbc3.fill = GridBagConstraints.HORIZONTAL;
+	        gbc3.gridwidth = 2;
 	        gbc3.gridx = 0;
 	        gbc3.gridy = 0;
+	        gamePanel.add(currentTurnLabel, gbc3);
+	        gbc3.gridwidth = 1;
+	        gbc3.gridx = 0;
+	        gbc3.gridy = 1;
 	        gamePanel.add(yourFieldLabel, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 0;
+	        gbc3.gridy = 1;
 	        gamePanel.add(enemyFieldLabel, gbc3);	        
 	        gbc3.gridx = 0;
-	        gbc3.gridy = 1;
+	        gbc3.gridy = 2;
 	        gamePanel.add(playerGrid, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 1;
+	        gbc3.gridy = 2;
 	        gamePanel.add(enemyGrid, gbc3);
 	        
 			shipSelectPanel.setVisible(false);
-			frame.setTitle("Battleships - Playing on: " + host);
+			frame.setTitle("[" + player.getPlayerName() + "] " + "Battleships - Playing on: " + host);
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 			frame.add(gamePanel, BorderLayout.CENTER);
 		});
@@ -292,6 +292,21 @@ public class Client {
 
 	}
 	
+	public boolean isMyTurn() {
+		return myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+		if(myTurn)
+			enemyGrid.setShooting(true);
+	}
+	
+	public void setTurnLabel(String playerName)
+	{
+		currentTurnLabel.setText("Current turn: " + playerName);
+	}
+
 	public int[][] getPlayerShips()
 	{
 		return playerShips;
@@ -311,6 +326,7 @@ public class Client {
 		new Client();
 
 	}
+	
 	
 	public void openWaitingScreen()
 	{

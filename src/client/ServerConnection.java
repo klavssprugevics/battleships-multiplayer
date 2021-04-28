@@ -2,65 +2,73 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import server.Message;
 
 public class ServerConnection extends Thread{
 
 	private Socket server;
 	private Client client;
 	private Player player;
-	private BufferedReader in;
-	private PrintWriter out;
-	private ObjectOutputStream oos;
+	private Shot shot;
+
+	private ObjectOutputStream out;
+	private ObjectInputStream in;
+	private Message message;
+	
 	private boolean playersConnected = false;
 	private boolean playersReady = false;
 	private boolean ready = false;
+	private boolean gameStarted = false;
 	
 	public ServerConnection(Socket server, Player player, Client client) throws IOException
 	{
 		this.server = server;
 		this.client = client;
 		this.player = player;
-		this.in = new BufferedReader(new InputStreamReader(server.getInputStream()));
-		this.out = new PrintWriter(server.getOutputStream(), true);
-		this.oos = new ObjectOutputStream(server.getOutputStream());
-		
+		this.out = new ObjectOutputStream(server.getOutputStream());
+		this.in = new ObjectInputStream(server.getInputStream());		
 	}
 	
-//	public void checkPlayersConnected()
-//	{
-//		out.println("playersConnected?");
-//	}
-	
-	public void checkPlayersReady()
-	{
-		out.println("playersReady?");
-	}
+
 	
 	public void setReady(boolean ready)
 	{
 		this.ready = ready;
 	}
 	
-	public void sendPlayerName()
+	public void sendShot(Shot shot)
 	{
-		out.println("name:" + player.getPlayerName());
+		this.shot = shot;
+		try
+		{
+//			System.out.println("Sending shot (" + shot.getX() + ", " + shot.getY() + ")");
+			out.writeObject(this.shot);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Error sending shot: " + e.getMessage());
+		}
 	}
 	
 	public void sendPlayerObject()
 	{
 		// Tell the server that the next call will be the player object
-		out.println("nextPlayer");
-		try {
-			oos.writeObject(player);
-		} catch (IOException e) {
+		
+		try
+		{
+			out.writeObject("nextPlayer");
+			out.writeObject(player);
+		}
+		catch (IOException e)
+		{
 			System.out.println("Error sending Player object");
 			e.printStackTrace();
 		}
-
-		
 	}
 	
 	
@@ -70,61 +78,84 @@ public class ServerConnection extends Thread{
 		{
 			while(true)
 			{
-				String serverResponse;
-				serverResponse = in.readLine();
-				System.out.println("[SERVER]: " + serverResponse);
+				Object recievedObject = in.readObject();
 				
-				
-				// Apstrada response no servera
-				
-				
-				// Ja visi lietotaji nav pieslegusies - atvert gaidisanas ekranu
-				if(!playersConnected)
+				if(!gameStarted)
 				{
-					if(serverResponse.equals("wait"))
+					System.out.println("Game not started");
+					String serverResponse;
+					System.out.println("Listening for server response");
+					serverResponse = (String) recievedObject;
+					System.out.println("[SERVER]: " + serverResponse);
+
+					// Ja visi lietotaji nav pieslegusies - atvert gaidisanas ekranu
+					if(!playersConnected)
 					{
-						System.out.println("Waiting for other player...");
-						client.openWaitingScreen();
+						if(serverResponse.equals("wait"))
+						{
+							System.out.println("Waiting for other player...");
+							client.openWaitingScreen();
+						}
+						else if(serverResponse.equals("playersConnected"))
+						{
+							System.out.println("Players connected.");
+							client.closeWaitingScreen();
+							playersConnected = true;
+							
+						}
 					}
-					else if(serverResponse.equals("playersConnected"))
+					
+					// Ja visi lietotaji pieslegusies, visi speletaji nav gatavi, tacu mes esam gatavi
+					// atvert gaidisanas ekranu
+					if(playersConnected && !playersReady && ready)
 					{
-						System.out.println("Players connected.");
-						client.closeWaitingScreen();
-						playersConnected = true;
-						
+						if(serverResponse.equals("wait"))
+						{
+							System.out.println("Waiting for other player...");
+							client.openWaitingScreen();
+						}
+						else if(serverResponse.equals("playersReady"))
+						{
+							System.out.println("Players ready.");
+							client.closeWaitingScreen();
+							playersReady = true;
+							gameStarted = true;
+						}
 					}
 				}
-				
-				
-				// Ja visi lietotaji pieslegusies, visi speletaji nav gatavi, tacu mes esam gatavi
-				// atvert gaidisanas ekranu
-				if(playersConnected && !playersReady && ready)
+				else
 				{
-					if(serverResponse.equals("wait"))
+					
+					System.out.println("Trying to get message");
+					message = (Message) recievedObject;
+					System.out.println("Recieved message");
+					System.out.println("Hit: " + message.isHit());
+					System.out.println("Sink: " + message.isSink());
+					System.out.println("Victory: " + message.isVictory());
+					System.out.println("Next turn: " + message.getNextTurn());
+					
+					if(message.getNextTurn().equals(player.getPlayerName()))
 					{
-						System.out.println("Waiting for other player...");
-						client.openWaitingScreen();
+						client.setMyTurn(true);
 					}
-					else if(serverResponse.equals("playersReady"))
-					{
-						System.out.println("Players ready.");
-						client.closeWaitingScreen();
-						playersReady = true;
-					}
+					client.setTurnLabel(message.getNextTurn());
 				}
 
-				
-				if(serverResponse == null) break;
 			}
 		}
 		catch(IOException e)
 		{
 			System.out.println(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		finally
 		{
 			try
 			{
+				in.close();
+				out.close();
 				server.close();
 			}
 			catch(IOException e)

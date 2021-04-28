@@ -8,19 +8,15 @@ import client.Player;
 
 public class Server {
 	private static int PORT;
-	private static ArrayList<ClientHandler> clients = new ArrayList<>();
-	private static ArrayList<Player> players = new ArrayList<>();
 	
-//
-//	public static void getPlayerNames()
-//	{
-//		System.out.println("Players connected: ");
-//		for (String player : players) {
-//			System.out.println(player);
-//		}
-//	}
-//	
+	public static ArrayList<ClientHandler> clients = new ArrayList<>();
+	public static ArrayList<Player> players = new ArrayList<>();
 	
+	public static Player currentTurn;
+	public static boolean gameStarted = false;
+	public static boolean playersConnected = false;
+	
+
 	public static void main(String[] args) throws IOException {
 		
 		// Parbauda, vai serverim noradits porta nr.
@@ -29,9 +25,12 @@ public class Server {
 			System.out.println("Define port number as argument.");
 			System.exit(1);
 		}
+		
 		PORT = Integer.parseInt(args[0]);
+		
 		ServerSocket listener = new ServerSocket(PORT);
-		System.out.println("Waiting!!!");
+		System.out.println("Server running. Waiting for connections...");
+		
 		try
 		{
 			// Gaida klientu savienojumus
@@ -41,10 +40,9 @@ public class Server {
 				System.out.println("New client connected");
 				
 				// Izveido un saak clientHandler thread
-				ClientHandler clientThread = new ClientHandler(client, clients, players);
+				ClientHandler clientThread = new ClientHandler(client);
 				clients.add(clientThread);
 				clientThread.start();
-
 			}
 		}
 		finally
@@ -52,5 +50,4 @@ public class Server {
 			listener.close();
 		}
 	}
-
 }

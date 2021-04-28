@@ -7,6 +7,8 @@ public class Ship implements java.io.Serializable{
 	private int xPos;
 	private int yPos;
 	private int rotation;
+	private int[] xCoordinates;
+	private int[] yCoordinates;
 	private Vector<Point> coordinates = new Vector<Point>();
 	private int size;
 	
@@ -18,11 +20,22 @@ public class Ship implements java.io.Serializable{
 		this.rotation = rotation;
 		this.size = size;
 		
+		xCoordinates = new int[size];
+		yCoordinates = new int[size];
+		
 		for (int i = 0; i < size; i++) {
 			if(rotation == 0)
+			{
+				xCoordinates[i] = xPos;
+				yCoordinates[i] = yPos + i;
 				coordinates.add(new Point(xPos, yPos + i));
+			}
 			else
+			{
+				xCoordinates[i] = xPos + i;
+				yCoordinates[i] = yPos;
 				coordinates.add(new Point(xPos + i, yPos));
+			}
 		}
 		
 	}
