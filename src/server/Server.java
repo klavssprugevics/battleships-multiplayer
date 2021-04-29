@@ -67,7 +67,7 @@ public class Server {
 
 	public static void main(String[] args) throws IOException {
 		
-		// Ja nav noradits porta nr. tad uzstada default port
+		// Ja nav noradits porta nr. tad uzstada default port.
 		if(args.length < 1)
 			PORT = 8989;
 		else
