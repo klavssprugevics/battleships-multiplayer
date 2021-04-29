@@ -51,6 +51,19 @@ public class ServerConnection extends Thread{
 		}
 	}
 	
+	public void closeConnection()
+	{
+		try {
+			in.close();
+			out.close();
+			server.close();
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error closing connection: " + e.getMessage());
+		}
+	}
+	
 	public void sendPlayerObject()
 	{
 		// Tell the server that the next call will be the player object
@@ -149,7 +162,7 @@ public class ServerConnection extends Thread{
 			}
 			catch(IOException e)
 			{
-				System.out.println(e.getMessage());
+				System.out.println("Error closing socket: " + e.getMessage());
 			}
 		}
 	}

@@ -22,38 +22,36 @@ import server.Message;
 
 public class Client {
 
-	private JFrame frame;	
+	private JFrame frame;
+	private JFrame waitFrame;
 	private JPanel connectionPanel;
+	private JPanel waitPanel;
 	private JPanel shipSelectPanel;
 	private JPanel gamePanel;
-	
-	
-	private JFrame waitFrame;
-	private JPanel waitPanel;
 
-	
-	
 	private JButton continueButton;
 	private JLabel descriptionLabel;
-	
+	private JLabel infoBox;
 	private JLabel currentTurnLabel;
 
 	private int[][] playerShips;
 	private Player player;
 	private String lastTurn;
 	
-	private boolean myTurn = false;
-//	private GameGrid yourGrid;
 	private PlayerGrid playerGrid;
 	private EnemyGrid enemyGrid;
-//	private GameManager gameManager;
 	
 	private String host;
 	private String port;
 	private String name;
 	private Socket socket;
 	private ServerConnection serverCon;
-		
+	
+	// Stats
+	private int hits = 0;
+	private int misses = 0;
+	private int shipsLeft = 10;
+	
 	public Client() {
 		
 		// Connection panel
@@ -92,7 +90,6 @@ public class Client {
 				
 				connectionPanel.setVisible(false);
 
-				
 				player = new Player(nameInput);
 				
 				// Sak savienojumu ar serveri
@@ -116,9 +113,7 @@ public class Client {
 					frame.setTitle("[" + player.getPlayerName() + "] Ship setup");
 					frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					frame.add(shipSelectPanel, BorderLayout.CENTER);
-				}
-
-				
+				}				
 			}
 			else
 			{
@@ -126,6 +121,7 @@ public class Client {
 			}
 		});
         
+		// Izkartojuma definicijas
         g.insets = new Insets(5,5,5,5);
         g.fill = GridBagConstraints.HORIZONTAL;
         g.gridwidth = 2;
@@ -156,12 +152,10 @@ public class Client {
         connectionPanel.add(connectButton, g);
         
       
-     
+        // Gaidisanas panelis
 		waitFrame = new JFrame("Waiting for other player...");		
 		waitPanel = new JPanel();
 		
-
-
         JLabel waitLabel = new JLabel("Waiting for other player...");
         waitLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
         waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -175,21 +169,16 @@ public class Client {
 		waitFrame.pack();
 		
 		
-		
-        // Setup Ship panel
-
-	    
-        // Initialize 2D array
-        playerShips = new int[10][10]; // TODO: Fixed variables
+		// Izveido tuksu lietotaja laukumu
+        playerShips = new int[10][10];
         for (int i = 0; i < playerShips.length; i++) {
 			for (int j = 0; j < playerShips[i].length; j++) {
 				playerShips[i][j] = 0;
 			}
 		}
-        
-        
 
-	    GameSetupGrid setupGrid = new GameSetupGrid(this);
+        // Laukuma uzstadisana
+        GameSetupGrid setupGrid = new GameSetupGrid(this);
 	    
         shipSelectPanel = new JPanel();
         shipSelectPanel.setLayout(new GridBagLayout());
@@ -216,16 +205,11 @@ public class Client {
 			playerGrid = new PlayerGrid(player.getPlayerField());
 			enemyGrid = new EnemyGrid(serverCon);
 			
+			// Nosutam serverim savus speles datus
 			serverCon.sendPlayerObject();
 			serverCon.setReady(true);
-			
-
-			
-
-
- 
 	        
-	        
+			
 		    GridBagConstraints gbc3 = new GridBagConstraints();
 		    
 	        currentTurnLabel = new JLabel("Current Turn: ");
@@ -240,24 +224,31 @@ public class Client {
 	        enemyFieldLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
 	        enemyFieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	        
+	        infoBox = new JLabel("");
+	        infoBox.setFont(new Font("Verdana", Font.PLAIN, 24));
+	        infoBox.setHorizontalAlignment(SwingConstants.CENTER);
+	        
 	        gbc3.insets = new Insets(5,50,5,50);
 	        gbc3.fill = GridBagConstraints.HORIZONTAL;
 	        gbc3.gridwidth = 2;
 	        gbc3.gridx = 0;
 	        gbc3.gridy = 0;
 	        gamePanel.add(currentTurnLabel, gbc3);
+	        gbc3.gridx = 0;
+	        gbc3.gridy = 1;
+	        gamePanel.add(infoBox, gbc3);
 	        gbc3.gridwidth = 1;
 	        gbc3.gridx = 0;
-	        gbc3.gridy = 1;
+	        gbc3.gridy = 2;
 	        gamePanel.add(yourFieldLabel, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 1;
+	        gbc3.gridy = 2;
 	        gamePanel.add(enemyFieldLabel, gbc3);	        
 	        gbc3.gridx = 0;
-	        gbc3.gridy = 2;
+	        gbc3.gridy = 3;
 	        gamePanel.add(playerGrid, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 2;
+	        gbc3.gridy = 3;
 	        gamePanel.add(enemyGrid, gbc3);
 	        
 			shipSelectPanel.setVisible(false);
@@ -285,7 +276,7 @@ public class Client {
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridBagLayout());
 
-        
+ 
         
         frame = new JFrame("Connect to server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -295,29 +286,7 @@ public class Client {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-	
-
 	}
-	
-	public boolean isMyTurn() {
-		return myTurn;
-	}
-
-	public void setMyTurn(boolean myTurn) {
-		this.myTurn = myTurn;
-		if(myTurn)
-			enemyGrid.setShooting(true);
-	}
-	
-//	public void setTurnLabel(String playerName)
-//	{
-//		currentTurnLabel.setText("Current turn: " + playerName);
-//	}
-
-//	public int[][] getPlayerShips()
-//	{
-//		return playerShips;
-//	}
 	
 	public void editDescription(String newLabel)
 	{
@@ -329,10 +298,7 @@ public class Client {
 		continueButton.setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		new Client();
 
-	}
 	
 	public void processMessage(Message message) {
 		
@@ -347,8 +313,6 @@ public class Client {
 		System.out.println("Shot: " + message.getShot());
 		System.out.println("Ship: " + message.getShip());
 		System.out.println("-------------------------");
-		
-		
 		
 		
 		// 1. gajiena neviens nav izsavis - to vajag skippot
@@ -369,19 +333,25 @@ public class Client {
 			
 			if(message.isHit())
 			{
+				hits++;
+				
 				enemyGrid.setColor(shot.getY(), shot.getX(), Color.red, true);
 				if(message.isSink())
 				{
 					enemyGrid.drawBoundingBox(message.getShip());
-						
+					shipsLeft--;
 				}
 			}
 			else
 			{
+				misses++;
+				
 				enemyGrid.setColor(shot.getY(), shot.getX(), new Color(158, 216, 240), true);
 				enemyGrid.setShooting(false);
 			}
 			
+			float acc = (float) hits / (hits + misses) * 100;
+			infoBox.setText("Hits: " + hits + " misses: " + misses + " accuracy: " + Math.round(acc) + "% Enemy ships left: " + shipsLeft);
 		}
 		else
 		{
@@ -398,10 +368,12 @@ public class Client {
 			}				
 		}
 		
+		
+		
 		if(message.isVictory())
 			declareWinner(lastTurn);
 			
-			
+		
 		lastTurn = message.getNextTurn();
 		currentTurnLabel.setText("Current turn: " + message.getNextTurn());
 	}
@@ -409,38 +381,31 @@ public class Client {
 	
 	public void openWaitingScreen()
 	{
-		System.out.println("Other player not connected: opening waiting screen.");
-		frame.setVisible(false);
 		waitFrame.setVisible(true);
+		frame.setVisible(false);
+		
 	}
+	
 	public void closeWaitingScreen()
 	{
 		frame.setVisible(true);
 		if(waitFrame.equals(null))
 			return;
 		waitFrame.setVisible(false);
-
 	}
+	
+	
 	public void declareWinner(String winner)
 	{
-		try
-		{
-			socket.close();
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error closing client socket " + e.getMessage());
-		}
-		finally
-		{
-			JOptionPane.showMessageDialog(frame,"Player: " + winner + " has won.");
-			frame.dispose();
-		}
-		
+		// Aizveram savienojumu un paradam message box
+		JOptionPane.showMessageDialog(frame,"Player: " + winner + " has won.");
+		frame.dispose();
+		serverCon.closeConnection();
+		System.exit(0);		
 	}
 
-
-	
-
+	public static void main(String[] args) {
+		new Client();
+	}
 
 }

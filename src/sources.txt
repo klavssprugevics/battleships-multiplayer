@@ -2,8 +2,6 @@ C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBatt
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\EnemyCell.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\EnemyGrid.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\FriendlyCell.java
-C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameGrid.java
-C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameManager.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\GameSetupGrid.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\Player.java
 C:\Users\Klavs\Documents\lu\2_SEM\datoru_tikli_ii\majasdarbi\MD3\MultiplayerBattleships\src\client\PlayerGrid.java

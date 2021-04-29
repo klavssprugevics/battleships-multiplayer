@@ -134,8 +134,16 @@ public class ClientHandler extends Thread {
 					System.out.println("Y: " + shot.getY());
 					
 					// Logic
+					Message response = Server.processShot(shot);
+					broadcast(response);
 					
-					broadcast(Server.processShot(shot));
+					if(response.isVictory())
+					{
+						in.close();
+						out.close();
+						client.close();
+						System.exit(0);
+					}
 
 				}				
 			}
