@@ -1,4 +1,4 @@
-package client;
+package model;
 
 @SuppressWarnings("serial")
 public class Shot implements java.io.Serializable{

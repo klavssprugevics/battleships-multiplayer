@@ -1,10 +1,4 @@
-package server;
-
-import java.awt.Point;
-import java.util.Vector;
-
-import client.Shot;
-import client.Ship;
+package model;
 
 @SuppressWarnings("serial")
 public class Message implements java.io.Serializable{

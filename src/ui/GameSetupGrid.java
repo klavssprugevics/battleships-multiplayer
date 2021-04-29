@@ -1,4 +1,4 @@
-package client;
+package ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -10,6 +10,9 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
+
+import client.Client;
+import model.Ship;
 
 @SuppressWarnings("serial")
 public class GameSetupGrid extends JPanel{

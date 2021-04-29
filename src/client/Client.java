@@ -17,7 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import server.Message;
+import model.Message;
+import model.Player;
+import model.Shot;
+import ui.EnemyGrid;
+import ui.GameSetupGrid;
+import ui.PlayerGrid;
 
 
 public class Client {
@@ -110,6 +115,7 @@ public class Client {
 				}
 				finally
 				{
+					frame.setMinimumSize(new Dimension(1400, 1000));
 					frame.setTitle("[" + player.getPlayerName() + "] Ship setup");
 					frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					frame.add(shipSelectPanel, BorderLayout.CENTER);
@@ -197,6 +203,7 @@ public class Client {
         continueButton.setVisible(false);
         continueButton.addActionListener(e ->
 		{
+			frame.setMinimumSize(new Dimension(300, 200));
 			// Continue buttton pressed
 			
 			player.setPlayerField(setupGrid.returnField());
@@ -229,29 +236,31 @@ public class Client {
 	        infoBox.setHorizontalAlignment(SwingConstants.CENTER);
 	        
 	        gbc3.insets = new Insets(5,50,5,50);
-	        gbc3.fill = GridBagConstraints.HORIZONTAL;
+	        gbc3.fill = GridBagConstraints.HORIZONTAL;       
 	        gbc3.gridwidth = 2;
 	        gbc3.gridx = 0;
 	        gbc3.gridy = 0;
 	        gamePanel.add(currentTurnLabel, gbc3);
-	        gbc3.gridx = 0;
-	        gbc3.gridy = 1;
-	        gamePanel.add(infoBox, gbc3);
 	        gbc3.gridwidth = 1;
 	        gbc3.gridx = 0;
-	        gbc3.gridy = 2;
+	        gbc3.gridy = 1;
 	        gamePanel.add(yourFieldLabel, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 2;
+	        gbc3.gridy = 1;
 	        gamePanel.add(enemyFieldLabel, gbc3);	        
 	        gbc3.gridx = 0;
-	        gbc3.gridy = 3;
+	        gbc3.gridy = 2;
 	        gamePanel.add(playerGrid, gbc3);
 	        gbc3.gridx = 1;
-	        gbc3.gridy = 3;
+	        gbc3.gridy = 2;
 	        gamePanel.add(enemyGrid, gbc3);
+	        gbc3.gridwidth = 2;
+	        gbc3.gridx = 0;
+	        gbc3.gridy = 3;
+	        gamePanel.add(infoBox, gbc3);
 	        
 			shipSelectPanel.setVisible(false);
+			frame.setMinimumSize(new Dimension(1400, 1000));
 			frame.setTitle("[" + player.getPlayerName() + "] " + "Battleships - Playing on: " + host);
 			frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 			frame.add(gamePanel, BorderLayout.CENTER);
@@ -312,7 +321,6 @@ public class Client {
 		System.out.println("Next turn: " + message.getNextTurn());
 		System.out.println("Shot: " + message.getShot());
 		System.out.println("Ship: " + message.getShip());
-		System.out.println("-------------------------");
 		
 		
 		// 1. gajiena neviens nav izsavis - to vajag skippot
@@ -407,5 +415,4 @@ public class Client {
 	public static void main(String[] args) {
 		new Client();
 	}
-
 }

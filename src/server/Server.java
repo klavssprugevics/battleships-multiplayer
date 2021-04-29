@@ -4,9 +4,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import client.Player;
-import client.Ship;
-import client.Shot;
+import model.Message;
+import model.Player;
+import model.Shot;
 
 public class Server {
 	private static int PORT;

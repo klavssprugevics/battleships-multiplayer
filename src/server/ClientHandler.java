@@ -5,8 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import client.Player;
-import client.Shot;
+import model.Message;
+import model.Player;
+import model.Shot;
 
 
 public class ClientHandler extends Thread {
@@ -124,14 +125,10 @@ public class ClientHandler extends Thread {
 					}
 				}
 				else
-				{
-					System.out.println("Recieving shots");
-					
-					// Nosuta/sanem shots un messages
+				{				
 					// Nolasa shot
 					Shot shot = (Shot) recievedObject;
-					System.out.println("X: " + shot.getX());
-					System.out.println("Y: " + shot.getY());
+					System.out.println("New shot: (" + shot.getX() + ", " + shot.getY() + ")");
 					
 					// Logic
 					Message response = Server.processShot(shot);
@@ -144,7 +141,6 @@ public class ClientHandler extends Thread {
 						client.close();
 						System.exit(0);
 					}
-
 				}				
 			}
 		}

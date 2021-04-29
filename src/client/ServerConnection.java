@@ -4,7 +4,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import server.Message;
+import model.Message;
+import model.Player;
+import model.Shot;
 
 public class ServerConnection extends Thread{
 
@@ -30,8 +32,6 @@ public class ServerConnection extends Thread{
 		this.out = new ObjectOutputStream(server.getOutputStream());
 		this.in = new ObjectInputStream(server.getInputStream());		
 	}
-	
-
 	
 	public void setReady(boolean ready)
 	{
@@ -66,8 +66,6 @@ public class ServerConnection extends Thread{
 	
 	public void sendPlayerObject()
 	{
-		// Tell the server that the next call will be the player object
-		
 		try
 		{
 			out.writeObject("nextPlayer");
@@ -75,11 +73,9 @@ public class ServerConnection extends Thread{
 		}
 		catch (IOException e)
 		{
-			System.out.println("Error sending Player object");
-			e.printStackTrace();
+			System.out.println("Error sending Player object: " + e.getMessage());
 		}
 	}
-	
 	
 	public void run()
 	{
@@ -91,10 +87,7 @@ public class ServerConnection extends Thread{
 				
 				if(!gameStarted)
 				{
-					System.out.println("Game not started");
-					String serverResponse;
-					System.out.println("Listening for server response");
-					serverResponse = (String) recievedObject;
+					String serverResponse = (String) recievedObject;
 					System.out.println("[SERVER]: " + serverResponse);
 
 					// Ja visi lietotaji nav pieslegusies - atvert gaidisanas ekranu
@@ -102,12 +95,10 @@ public class ServerConnection extends Thread{
 					{
 						if(serverResponse.equals("wait"))
 						{
-							System.out.println("Waiting for other player...");
 							client.openWaitingScreen();
 						}
 						else if(serverResponse.equals("playersConnected"))
 						{
-							System.out.println("Players connected.");
 							client.closeWaitingScreen();
 							playersConnected = true;
 							
@@ -120,12 +111,10 @@ public class ServerConnection extends Thread{
 					{
 						if(serverResponse.equals("wait"))
 						{
-							System.out.println("Waiting for other player...");
 							client.openWaitingScreen();
 						}
 						else if(serverResponse.equals("playersReady"))
 						{
-							System.out.println("Players ready.");
 							client.closeWaitingScreen();
 							playersReady = true;
 							gameStarted = true;
@@ -134,10 +123,7 @@ public class ServerConnection extends Thread{
 				}
 				else
 				{
-					
-					System.out.println("Trying to get message");
 					message = (Message) recievedObject;
-
 					
 					// Process message
 					client.processMessage(message);
@@ -147,9 +133,10 @@ public class ServerConnection extends Thread{
 		}
 		catch(IOException e)
 		{
-			System.out.println(e.getMessage());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Error retrieving message: " + e.getMessage());
+		}
+		catch (ClassNotFoundException e)
+		{
 			e.printStackTrace();
 		}
 		finally
@@ -166,5 +153,4 @@ public class ServerConnection extends Thread{
 			}
 		}
 	}
-	
 }
