@@ -67,14 +67,13 @@ public class Server {
 
 	public static void main(String[] args) throws IOException {
 		
-		// Parbauda, vai serverim noradits porta nr.
+		// Ja nav noradits porta nr. tad uzstada default port
 		if(args.length < 1)
-		{
-			System.out.println("Define port number as argument.");
-			System.exit(1);
-		}
+			PORT = 8989;
+		else
+			PORT = Integer.parseInt(args[0]);
 		
-		PORT = Integer.parseInt(args[0]);
+		
 		
 		ServerSocket listener = new ServerSocket(PORT);
 		System.out.println("Server running. Waiting for connections...");
