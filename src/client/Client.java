@@ -371,7 +371,7 @@ public class Client {
 			}				
 			else
 			{
-				playerGrid.setColor(shot.getY(), shot.getX(), new Color(158, 216, 240));
+				playerGrid.setColor(shot.getY(), shot.getX(), Color.blue);
 				enemyGrid.setShooting(true);
 			}				
 		}
